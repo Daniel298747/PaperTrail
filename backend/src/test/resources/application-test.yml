@@ -1,0 +1,29 @@
+# Test profile: real PostgreSQL (embedded, started by TestDatabase), in-memory object storage,
+# scheduler disabled (tests drive the job services directly with explicit instants).
+app:
+  jwt:
+    # Test-only key, base64 of an obviously non-secret string. Never used outside the test suite.
+    secret: dGVzdC1vbmx5LXNpZ25pbmcta2V5LWZvci1wYXBlcnRyYWlsLWludGVncmF0aW9uLXRlc3Rz
+  refresh:
+    cookie-secure: false
+  password-hashing:
+    bcrypt-strength: 4
+  storage:
+    provider: memory
+  uploads:
+    max-file-size: 1MB
+  jobs:
+    enabled: false
+  seed:
+    # A developer's .env may enable the demo seeder for local runs; never in tests.
+    demo: false
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
+
+logging:
+  level:
+    com.papertrail: INFO

@@ -1,0 +1,214 @@
+/* Charts follow the house data-viz specs: thin marks, hairline solid grid, values in ink,
+   identity from the colored mark beside the text, a tooltip that never gates (table view twin). */
+.chart {
+  position: relative;
+  min-width: 0;
+}
+
+.chart-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.chart-head p {
+  margin-top: 0.25rem;
+  color: var(--ink-3);
+  font-size: var(--text-sm);
+}
+
+.chart-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-left: auto;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.legend-swatch {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 2px;
+}
+
+.chart-plot {
+  position: relative;
+  border-radius: var(--radius);
+}
+
+.chart-plot:focus-visible {
+  outline-offset: 6px;
+}
+
+.chart-plot svg {
+  overflow: visible;
+}
+
+.chart-plot .tick-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  fill: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-plot .tick-label.strong {
+  fill: var(--ink-2);
+  font-weight: 600;
+}
+
+.chart-tooltip {
+  position: absolute;
+  z-index: 5;
+  min-width: 10.5rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--overlay-shadow);
+  font-size: var(--text-sm);
+  pointer-events: none;
+}
+
+.chart-tooltip .tt-title {
+  margin-bottom: 0.35rem;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.chart-tooltip .tt-row {
+  display: grid;
+  grid-template-columns: 0.85rem auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.1rem 0;
+}
+
+.chart-tooltip .tt-key {
+  width: 0.85rem;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.chart-tooltip .tt-value {
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-tooltip .tt-label {
+  color: var(--ink-2);
+}
+
+.chart-table {
+  margin-top: 0.25rem;
+}
+
+.chart-empty {
+  padding: 2.5rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-3);
+  font-size: var(--text-sm);
+}
+
+/* Horizontal bars (category breakdown): values sit at the bar tip in ink */
+.hbars li {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, 10rem) minmax(0, 1fr);
+  align-items: center;
+  gap: 0.35rem 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.hbars li:first-child {
+  border-top: 1px solid var(--rule-strong);
+}
+
+.hbar-label {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.hbar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.hbar-fill {
+  height: 14px;
+  min-width: 2px;
+  background: var(--series-1);
+  border-radius: 0 4px 4px 0;
+  flex: none;
+}
+
+.hbar-value {
+  flex: none;
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.hbar-value .muted {
+  margin-left: 0.35rem;
+}
+
+/* Small multiples: one panel per provider, each with its own scale */
+.multiples {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
+  gap: 1.75rem 2rem;
+}
+
+.multiple {
+  border-top: 1px solid var(--rule-strong);
+  padding-top: 0.7rem;
+  min-width: 0;
+}
+
+.multiple-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.multiple-head h3 {
+  overflow-wrap: anywhere;
+}
+
+.multiple-total {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.multiple-sub {
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.5rem;
+}

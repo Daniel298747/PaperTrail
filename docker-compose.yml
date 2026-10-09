@@ -1,0 +1,98 @@
+# PaperTrail: PostgreSQL, MinIO-compatible object storage, the Spring Boot API and the web app.
+#
+#   cp .env.example .env      # then set the passwords
+#   docker compose up --build
+#
+# Web app: http://localhost:3000   API: http://localhost:8080   Storage console: http://localhost:9001
+name: papertrail
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-papertrail}
+      POSTGRES_USER: ${POSTGRES_USER:-papertrail}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (copy .env.example)}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # MinIO server for local S3. Upstream MinIO stopped publishing community images and binaries in 2025;
+  # pgsty/silo is the maintained fork of the MinIO server (same S3 API, same MINIO_* settings).
+  # Any S3-compatible image can be dropped in here; the backend only speaks the S3 API.
+  minio:
+    image: pgsty/silo:RELEASE.2026-09-16T00-00-00Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?Set MINIO_ROOT_USER in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD in .env}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+
+  # Creates the private bucket once storage is reachable (no anonymous access is ever granted).
+  minio-init:
+    image: pgsty/silo:RELEASE.2026-09-16T00-00-00Z
+    depends_on:
+      - minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      S3_BUCKET: ${S3_BUCKET:-papertrail-documents}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >
+        until mcli alias set local http://minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD" >/dev/null 2>&1;
+        do echo "waiting for storage"; sleep 2; done;
+        mcli mb --ignore-existing "local/$$S3_BUCKET"
+    restart: "no"
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-papertrail}
+      DATABASE_USERNAME: ${POSTGRES_USER:-papertrail}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-}
+      APP_COOKIE_SECURE: ${APP_COOKIE_SECURE:-false}
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+      APP_RECURRING_HORIZON_DAYS: ${APP_RECURRING_HORIZON_DAYS:-30}
+      APP_SEED_DEMO: ${APP_SEED_DEMO:-false}
+      S3_ENDPOINT: http://minio:9000
+      # The host browsers use for signed URLs; it must be reachable from the browser.
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://localhost:9000}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      S3_BUCKET: ${S3_BUCKET:-papertrail-documents}
+      S3_PATH_STYLE_ACCESS: "true"
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      S3_CREATE_BUCKET: "true"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+
+  web:
+    build: ./frontend
+    environment:
+      BACKEND_URL: http://backend:8080
+      STORAGE_PUBLIC_ORIGIN: ${S3_PUBLIC_ENDPOINT:-http://localhost:9000}
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres-data:
+  minio-data:

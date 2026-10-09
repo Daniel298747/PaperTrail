@@ -1,0 +1,24 @@
+# Secrets and local configuration
+.env
+*.local
+
+# Build output and dependencies
+node_modules/
+frontend/dist/
+backend/target/
+
+# Local data (embedded PostgreSQL, local object storage)
+backend/.local/
+.local/
+
+# End-to-end test artefacts
+e2e/test-results/
+e2e/playwright-report/
+e2e/.artifacts/
+
+# Editors and OS files
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db

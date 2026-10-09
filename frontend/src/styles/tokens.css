@@ -1,0 +1,51 @@
+/* PaperTrail design tokens: a household ledger on warm paper.
+   One accent (forest green), high-contrast neutrals, hairline rules instead of boxes. */
+:root {
+  color-scheme: light;
+
+  /* Paper & ink */
+  --paper: #f5f3ee;
+  --paper-raised: #fbfaf7; /* form fields */
+  --paper-sunk: #eeebe4; /* row hover, quiet fills */
+  --ink: #171717;
+  --ink-2: #4b4944; /* secondary text, 8.1:1 on paper */
+  --ink-3: #6b675f; /* muted text, 5.1:1 on paper */
+  --rule: #d8d4cb; /* dividers */
+  --rule-strong: #171717;
+  --field-border: #8f8a80; /* 3.3:1 against field fill */
+
+  /* The one accent */
+  --accent: #245b45; /* 7.1:1 on paper */
+  --accent-hover: #1a4433;
+  --accent-wash: #e3ebe5;
+  --accent-ink: #f5f3ee;
+
+  /* Status (always paired with an icon and a word) */
+  --danger: #a3321f; /* overdue, destructive; 6.2:1 */
+  --danger-wash: #f4e2dc;
+  --notice: #7a5300; /* due soon; 6.2:1 */
+
+  /* Charts: validated pair (OKLCH band, chroma, CVD dE 8.2, contrast >= 3:1 on paper) */
+  --series-1: #2b7a52;
+  --series-2: #c27a2c;
+  --chart-grid: #e3dfd6;
+  --chart-axis: #b9b4a9;
+  --chart-hover: #ebe8e0;
+
+  /* Type */
+  --font-display: 'Newsreader Variable', 'Newsreader', Georgia, 'Times New Roman', serif;
+  --font-ui: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.9375rem;
+  --text-lg: 1.0625rem;
+
+  /* Shape & space */
+  --radius: 2px;
+  --sidebar-width: 15.5rem;
+  --content-max: 78rem;
+  --gutter: clamp(1rem, 3.2vw, 3.5rem);
+  --overlay-shadow: 0 18px 40px -18px rgba(23, 23, 23, 0.35);
+  --focus: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent);
+}
