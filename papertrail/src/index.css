@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #0d1117;
+  color: #e6edf3;
+}
+
+/* Native date picker icon is black by default — invert it for the dark UI */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+}
